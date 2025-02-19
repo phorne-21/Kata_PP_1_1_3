@@ -17,21 +17,13 @@ public class UserDaoJDBCImpl implements UserDao {
     private final String READ_ALL_USERS = "SELECT * FROM users";
     private final String DELETE_ALL_USERS = "DELETE FROM users";
 
-    private final Connection connection;
     private static final Logger logger = Logger.getLogger("UserDaoJDBCImpl");
 
     public UserDaoJDBCImpl() {
-        try {
-            connection = Util.getConnection();
-            logger.info("Connected to database");
-        } catch (SQLException e) {
-            logger.severe("Creating UserDaoJDBCImpl was fail with message: " + e.getMessage());
-            throw new RuntimeException(e);
-        }
     }
 
     public void createUsersTable() {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(CREATE_USERS_TABLE)) {
+        try (PreparedStatement preparedStatement = Util.getConnection().prepareStatement(CREATE_USERS_TABLE)) {
             preparedStatement.executeUpdate();
             logger.info("Created table of users");
         } catch (SQLException e) {
@@ -41,7 +33,7 @@ public class UserDaoJDBCImpl implements UserDao {
     }
 
     public void dropUsersTable() {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(DELETE_USERS_TABLE)) {
+        try (PreparedStatement preparedStatement = Util.getConnection().prepareStatement(DELETE_USERS_TABLE)) {
             preparedStatement.executeUpdate();
             logger.info("Table of users was successfully dropped");
         } catch (SQLException e) {
@@ -51,7 +43,7 @@ public class UserDaoJDBCImpl implements UserDao {
     }
 
     public void saveUser(String name, String lastName, byte age) {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(SAVE_USER)) {
+        try (PreparedStatement preparedStatement = Util.getConnection().prepareStatement(SAVE_USER)) {
             preparedStatement.setString(1, name);
             preparedStatement.setString(2, lastName);
             preparedStatement.setByte(3, age);
@@ -64,7 +56,7 @@ public class UserDaoJDBCImpl implements UserDao {
     }
 
     public void removeUserById(long id) {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(DELETE_USER_BY_ID)) {
+        try (PreparedStatement preparedStatement = Util.getConnection().prepareStatement(DELETE_USER_BY_ID)) {
             preparedStatement.setLong(1, id);
             logger.info("Removed user with id " + id + " from table of users");
         } catch (SQLException e) {
@@ -75,7 +67,7 @@ public class UserDaoJDBCImpl implements UserDao {
 
     public List<User> getAllUsers() {
         List<User> userList = new ArrayList<>();
-        try (Statement statement = connection.createStatement()) {
+        try (Statement statement = Util.getConnection().createStatement()) {
             ResultSet resultSet = statement.executeQuery(READ_ALL_USERS);
             while (resultSet.next()) {
                 User user = new User();
@@ -94,7 +86,7 @@ public class UserDaoJDBCImpl implements UserDao {
     }
 
     public void cleanUsersTable() {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(DELETE_ALL_USERS)) {
+        try (PreparedStatement preparedStatement = Util.getConnection().prepareStatement(DELETE_ALL_USERS)) {
             int num = preparedStatement.executeUpdate();
             logger.info("Deleted " + num + " users. Table cleaned.");
         } catch (SQLException e) {
