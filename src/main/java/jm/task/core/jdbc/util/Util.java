@@ -13,20 +13,25 @@ import java.util.Properties;
 import java.util.logging.Logger;
 
 public class Util {
-    // реализуйте настройку соеденения с БД
+    private static final String URL = "jdbc:mysql://127.0.0.1:3306/pp_1_1_3";
+    private static final String USER = "root";
+    private static final String PASSWORD = "qwerty12";
+    private static final String DRIVER = "com.mysql.cj.jdbc.Driver";
+
     //Hibernate
     private static Logger logger = Logger.getLogger(Util.class.getName());
     private static SessionFactory sessionFactory;
+
     public static SessionFactory getSessionFactory() {
         if (sessionFactory == null) {
             try {
                 Configuration configuration = new Configuration();
 
                 Properties setting = new Properties();
-                setting.put(Environment.DRIVER, "com.mysql.jdbc.Driver");
-                setting.put(Environment.URL, "jdbc:mysql://127.0.0.1:3306/pp_1_1_3");
-                setting.put(Environment.USER, "root");
-                setting.put(Environment.PASS, "qwerty12");
+                setting.put(Environment.DRIVER, DRIVER);
+                setting.put(Environment.URL, URL);
+                setting.put(Environment.USER, USER);
+                setting.put(Environment.PASS, PASSWORD);
                 setting.put(Environment.DIALECT, "org.hibernate.dialect.MySQLDialect");
                 setting.put(Environment.SHOW_SQL, "true");
                 setting.put(Environment.CURRENT_SESSION_CONTEXT_CLASS, "thread");
@@ -44,11 +49,13 @@ public class Util {
         return sessionFactory;
     }
 
-    // jdbc
-    private static final String URL = "jdbc:mysql://127.0.0.1:3306/pp_1_1_3";
-    private static final String USER = "root";
-    private static final String PASSWORD = "qwerty12";
+    public static void closeSessionFactory() {
+        if (sessionFactory != null) {
+            sessionFactory.close();
+        }
+    }
 
+    // jdbc
     public static Connection getConnection() throws SQLException {
         return DriverManager.getConnection(URL, USER, PASSWORD);
     }
